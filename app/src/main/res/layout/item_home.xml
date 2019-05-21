@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/contenedor_inicio"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/background_home"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/altura_miniatura_comida"
+        android:src="@drawable/holder"
+        android:transitionName="@string/trancicionFoto"
+        android:scaleType="centerCrop" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="#66FF8A65"
+        android:layout_gravity="bottom" />
+
+    <TextView
+        android:id="@+id/price_home"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|bottom"
+        android:layout_marginBottom="32dp"
+        android:paddingLeft="@dimen/espacio_norma_1"
+        android:shadowColor="#4e4d4d"
+        android:shadowDx="3"
+        android:shadowDy="2"
+        android:shadowRadius="1.8"
+        android:text="Large Text"
+        android:textColor="@android:color/white"
+        android:textSize="48sp"
+        android:textStyle="italic" />
+
+    <TextView
+        android:id="@+id/name_home"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|bottom"
+        android:paddingBottom="16dp"
+        android:paddingLeft="16dp"
+        android:shadowColor="#4e4d4d"
+        android:shadowDx="3"
+        android:shadowDy="2"
+        android:shadowRadius="1.8"
+        android:text="Medium Text"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@android:color/white" />
+</FrameLayout>

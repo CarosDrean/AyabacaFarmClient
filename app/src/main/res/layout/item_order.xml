@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:minHeight="?attr/listPreferredItemHeight"
+    android:padding="10dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/iv_pedido"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/holder"
+        android:layout_centerVertical="true"/>
+
+    <TextView
+        android:id="@+id/name_order"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="70dp"
+        android:textAppearance="?attr/textAppearanceListItem"
+        tools:text="Oscar Salcedo" />
+
+    <TextView
+        android:id="@+id/products_order"
+        android:layout_marginRight="55dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/name_order"
+        android:layout_below="@+id/name_order"
+        tools:text="3 Helados" />
+
+    <TextView
+        android:id="@+id/address_order"
+        android:layout_marginRight="55dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/name_order"
+        android:layout_below="@+id/products_order"
+        tools:text="Acomayo E - 12" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/call"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="15dp"
+        android:src="@drawable/ic_icons8_subir_a_la_nube"/>
+
+</RelativeLayout>
