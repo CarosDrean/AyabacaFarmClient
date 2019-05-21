@@ -7,7 +7,7 @@
     android:padding="10dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/iv_pedido"
+        android:id="@+id/img_order"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:src="@drawable/holder"
@@ -22,7 +22,7 @@
         tools:text="Oscar Salcedo" />
 
     <TextView
-        android:id="@+id/products_order"
+        android:id="@+id/product_order"
         android:layout_marginRight="55dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,17 +36,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/name_order"
-        android:layout_below="@+id/products_order"
+        android:layout_below="@+id/product_order"
         tools:text="Acomayo E - 12" />
 
-    <ImageView
+    <!--<ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/call"
+        android:id="@+id/call_order"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_marginRight="15dp"
-        android:src="@drawable/ic_icons8_subir_a_la_nube"/>
+        android:src="@drawable/ic_icons8_subir_a_la_nube"/>-->
 
 </RelativeLayout>

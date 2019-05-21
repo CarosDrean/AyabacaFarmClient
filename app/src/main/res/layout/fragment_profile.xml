@@ -32,7 +32,7 @@
                 android:id="@+id/name_p"
                 android:layout_marginTop="5dp"
                 android:textSize="16sp"
-                android:text="Esta es la descripcion del prodcuto seleccionado por lo tanto..."/>
+                android:text="Nombre"/>
 
         </LinearLayout>
 

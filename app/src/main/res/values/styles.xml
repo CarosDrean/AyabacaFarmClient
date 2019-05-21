@@ -13,6 +13,13 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="card" parent="CardView">
+        <item name="android:layout_marginLeft">3dp</item>
+        <item name="android:layout_marginRight">3dp</item>
+        <item name="cardUseCompatPadding">true</item>
+        <item name="cardCornerRadius">7dp</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
