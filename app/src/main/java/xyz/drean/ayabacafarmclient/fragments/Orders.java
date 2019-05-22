@@ -1,17 +1,19 @@
 package xyz.drean.ayabacafarmclient.fragments;
 
 
-import android.content.Intent;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,10 +34,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import xyz.drean.ayabacafarmclient.DetailProduct;
 import xyz.drean.ayabacafarmclient.R;
 import xyz.drean.ayabacafarmclient.pojo.Order;
-import xyz.drean.ayabacafarmclient.pojo.Product;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -72,22 +72,40 @@ public class Orders extends Fragment {
         db = FirebaseFirestore.getInstance();
     }
 
+    private String getIdProfile() {
+        SharedPreferences prefs = getActivity().getSharedPreferences("DatosUser", Context.MODE_PRIVATE);
+        return prefs.getString("uid", "");
+    }
+
     private void getData() {
         Query query = db
                 .collection("orders")
                 .orderBy("uid")
+                .whereEqualTo("uidClient", getIdProfile())
                 .limit(50);
 
         FirestoreRecyclerOptions<Order> options = new FirestoreRecyclerOptions.Builder<Order>()
-                .setQuery(query, Order.class)
+                .setQuery(query, new SnapshotParser<Order>() {
+                    @NonNull
+                    @Override
+                    public Order parseSnapshot(@NonNull DocumentSnapshot snapshot) {
+                        Order o = snapshot.toObject(Order.class);
+                        o.setUid(snapshot.getId());
+
+                        return o;
+                    }
+                })
+                .setLifecycleOwner(this)
                 .build();
 
         adapter = new FirestoreRecyclerAdapter<Order, OrderHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull final OrderHolder holder, int position, @NonNull final Order model) {
-                holder.name.setText(model.getNameClient());
-                holder.product.setText(model.getNameProduct());
-                holder.adders.setText(model.getAddress());
+            protected void onBindViewHolder(@NonNull final OrderHolder holder, final int position, @NonNull final Order model) {
+                holder.name.setText(model.getNameProduct());
+                holder.product.setText(model.getQuantity() + " - S/." + model.getTotal());
+                holder.adders.setText(model.getDate());
+
+                holder.itemView.setTag(model.getUid());
 
                 StorageReference str = FirebaseStorage.getInstance().getReference()
                         .child("img")
@@ -104,13 +122,11 @@ public class Orders extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
 
-                /*holder.cel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(getActivity(), "Llamar.", Toast.LENGTH_SHORT).show();
-                    }
-                });*/
+            @Override
+            public int getItemCount() {
+                return super.getItemCount();
             }
 
             @NonNull
@@ -122,8 +138,21 @@ public class Orders extends Fragment {
             }
         };
 
-        adapter.notifyDataSetChanged();
+        //adapter.notifyDataSetChanged();
         orderList.setAdapter(adapter);
+    }
+
+    private void deleteItem(String uid, final int position) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("orders").document(uid)
+                .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(getActivity(), "¡Pedido eliminado!", Toast.LENGTH_SHORT).show();
+                adapter.notifyDataSetChanged();
+                adapter.notifyItemRemoved(position);
+            }
+        });
     }
 
     public class OrderHolder extends RecyclerView.ViewHolder {
@@ -131,7 +160,8 @@ public class Orders extends Fragment {
         TextView name;
         TextView product;
         TextView adders;
-        // ImageView cel;
+        //ImageView delete;
+        public RelativeLayout content;
 
         public OrderHolder(View itemView) {
             super(itemView);
@@ -139,7 +169,8 @@ public class Orders extends Fragment {
             name = itemView.findViewById(R.id.name_order);
             product = itemView.findViewById(R.id.product_order);
             adders = itemView.findViewById(R.id.address_order);
-            // cel = itemView.findViewById(R.id.call_order);
+            //delete = itemView.findViewById(R.id.call_order);
+            content = itemView.findViewById(R.id.content_item_order);
         }
     }
 

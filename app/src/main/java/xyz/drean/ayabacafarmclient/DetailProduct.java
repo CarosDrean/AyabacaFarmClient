@@ -54,6 +54,10 @@ public class DetailProduct extends AppCompatActivity {
     private TextView cantidad;
     private boolean habilitar = false;
 
+    private String nameUser;
+    private String addresUser;
+    private String celUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +68,7 @@ public class DetailProduct extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         init();
+        getProfile(getIdProfile());
 
         getSupportActionBar().setTitle(name);
 
@@ -88,7 +93,7 @@ public class DetailProduct extends AppCompatActivity {
     private void alertOrder() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View v = getLayoutInflater().inflate(R.layout.alert_order, null);
-        datosPedido(v);
+        dataOrder(v);
         builder.setView(v);
         builder.setPositiveButton("Pedir", new DialogInterface.OnClickListener() {
             @Override
@@ -117,29 +122,27 @@ public class DetailProduct extends AppCompatActivity {
     }
 
     private Order createOrder() {
-        Profile p = getProfile(getIdProfile());
-        Order o = new Order(
+        return new Order(
                 String.valueOf(System.currentTimeMillis()),
                 getIdProfile(),
-                p.getAddress(),
+                addresUser,
                 name,
                 urlImg,
-                p.getName(),
-                p.getCel(),
-                Integer.parseInt(cantidad.getText().toString()),
+                nameUser,
+                celUser,
+                cantidad.getText().toString(),
                 Double.parseDouble(precio.getText().toString()),
                 Double.parseDouble(igv.getText().toString()),
                 getDate(),
                 Double.parseDouble(total.getText().toString())
         );
-        return o;
     }
 
     public String getDate() {
-        GregorianCalendar calendario = new GregorianCalendar();
-        return formatDate (calendario.get(Calendar.DAY_OF_MONTH),
-                calendario.get(Calendar.MONTH),
-                calendario.get(Calendar.YEAR));
+        GregorianCalendar calendar = new GregorianCalendar();
+        return formatDate (calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.YEAR));
     }
 
     public String formatDate(int dia, int mes, int ano) {
@@ -148,28 +151,23 @@ public class DetailProduct extends AppCompatActivity {
                 + "/" + ano);
     }
 
-    private Profile getProfile(String uid) {
+    private void getProfile(String uid) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference docRef = db.collection("profiles").document(uid);
-        final Profile[] p = new Profile[1];
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
-                    p[0] = new Profile(
-                            "",
-                            document.getString("name"),
-                            document.getString("address"),
-                            document.getString("cel")
-                    );
+                    nameUser = document.getString("name");
+                    addresUser = document.getString("address");
+                    celUser = document.getString("cel");
                 }
             }
         });
-        return p[0];
     }
 
-    private void datosPedido(View v){
+    private void dataOrder(View v){
         igv = v.findViewById(R.id.igv_order);
         precio = v.findViewById(R.id.price_unit_order);
         cantidad = v.findViewById(R.id.cantidad_order);

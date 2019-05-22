@@ -58,8 +58,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         if(getUseApp() == 0 || getIdProfile().equals("")){
-            Intent i = new Intent(MainActivity.this, InputProfile.class);
-            startActivity(i);
+            welcome();
         }
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -103,6 +102,23 @@ public class MainActivity extends AppCompatActivity
         builder.setPositiveButton("Listo", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        Dialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void welcome(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Importante")
+                .setCancelable(false)
+                .setMessage("Para poder interactuar con la aplicación primero debras regitras tus datos, para asi poder ponernos en contacto contigo :).");
+        builder.setPositiveButton("Listo", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent i = new Intent(MainActivity.this, InputProfile.class);
+                startActivity(i);
                 dialog.dismiss();
             }
         });

@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/content_item_order"
     xmlns:tools="http://schemas.android.com/tools"
     android:minHeight="?attr/listPreferredItemHeight"
     android:padding="10dp">
@@ -17,7 +18,7 @@
         android:id="@+id/name_order"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="70dp"
+        android:layout_marginLeft="75dp"
         android:textAppearance="?attr/textAppearanceListItem"
         tools:text="Oscar Salcedo" />
 
@@ -47,6 +48,6 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_marginRight="15dp"
-        android:src="@drawable/ic_icons8_subir_a_la_nube"/>-->
+        android:src="@drawable/ic_icons8_eliminar"/>-->
 
 </RelativeLayout>

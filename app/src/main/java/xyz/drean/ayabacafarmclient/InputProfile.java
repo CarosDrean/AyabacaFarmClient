@@ -26,6 +26,8 @@ public class InputProfile extends AppCompatActivity {
     private EditText address;
     private EditText cel;
 
+    private String uid;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +58,18 @@ public class InputProfile extends AppCompatActivity {
         final Drawable menuIcon = getResources().getDrawable(R.drawable.ic_baseline_close_24px);
         menuIcon.setColorFilter(getResources().getColor(R.color.blanco), PorterDuff.Mode.SRC_ATOP);
         actionBar.setHomeAsUpIndicator(menuIcon);
+
+        if(getIntent().getStringExtra("name") != null) {
+            edit();
+        }
+    }
+
+    private void edit() {
+        getSupportActionBar().setTitle("Editar Usuario");
+        uid = getIntent().getStringExtra("uid");
+        name.setText(getIntent().getStringExtra("name"));
+        address.setText(getIntent().getStringExtra("address"));
+        cel.setText(getIntent().getStringExtra("cel"));
     }
 
     @Override
@@ -69,7 +83,11 @@ public class InputProfile extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Toast.makeText(this, "¡Debe llenar los campos!", Toast.LENGTH_SHORT).show();
+        if(getIntent().getStringExtra("name") != null) {
+            super.onBackPressed();
+        } else {
+            Toast.makeText(this, "¡Debe llenar los campos!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void saveProfile() {
@@ -84,7 +102,14 @@ public class InputProfile extends AppCompatActivity {
                 cel.getText().toString()
         );
 
-        saveIdProfile(uid);
+        if(getIntent().getStringExtra("name") != null) {
+            uid = this.uid;
+            p.setUid(uid);
+            Toast.makeText(this, "¡Datos actualizados!", Toast.LENGTH_SHORT).show();
+        } else {
+            saveIdProfile(uid);
+        }
+
         db.collection("profiles").document(uid).set(p);
     }
 

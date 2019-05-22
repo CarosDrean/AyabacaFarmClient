@@ -68,4 +68,12 @@
             style="@style/Widget.MaterialComponents.ChipGroup"/>
 
     </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@drawable/ic_icons8_editar" />
 </FrameLayout>

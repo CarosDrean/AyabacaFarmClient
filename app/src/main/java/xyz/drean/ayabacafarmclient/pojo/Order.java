@@ -8,7 +8,7 @@ public class Order {
     private String urlImg;
     private String nameClient;
     private String cel;
-    private int quantity;
+    private String quantity;
     private double priceUnit;
     private double igv;
     private String date;
@@ -17,7 +17,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(String uid, String uidClient, String address, String nameProduct, String urlImg, String nameClient, String cel, int quantity, double priceUnit, double igv, String date, double total) {
+    public Order(String uid, String uidClient, String address, String nameProduct, String urlImg, String nameClient, String cel, String quantity, double priceUnit, double igv, String date, double total) {
         this.uid = uid;
         this.uidClient = uidClient;
         this.address = address;
@@ -88,11 +88,11 @@ public class Order {
         this.cel = cel;
     }
 
-    public int getQuantity() {
+    public String getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(String quantity) {
         this.quantity = quantity;
     }
 
