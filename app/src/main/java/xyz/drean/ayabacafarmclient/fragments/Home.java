@@ -109,7 +109,7 @@ public class Home extends Fragment {
                     str.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                            Glide.with(getActivity()).load(localFile).into(holder.background);
+                            Glide.with(getContext()).load(localFile).into(holder.background);
                         }
                     });
                 } catch (IOException e) {
