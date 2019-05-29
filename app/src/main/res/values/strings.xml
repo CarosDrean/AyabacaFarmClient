@@ -54,7 +54,7 @@
     <string name="asign_count">¡Asigne una cantidad mayor a 0!</string>
     <string name="data_updated">¡Datos actualizados!</string>
     <string name="important">Importante</string>
-    <string name="message_important">Para poder interactuar con la aplicación primero debras regitras tus datos, para asi poder ponernos en contacto contigo :).</string>
+    <string name="message_important">Para poder interactuar con la aplicación primero deberas regitras tus datos, para asi poder ponernos en contacto contigo :).</string>
     <string name="asignar_cantidad">Asignar cantidad</string>
     <string name="guion">-</string>
     <string name="cero">0</string>
