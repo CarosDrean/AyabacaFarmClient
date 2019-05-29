@@ -30,14 +30,13 @@
                 android:layout_marginBottom="10dp"
                 android:textColor="@color/negro"
                 android:textSize="15sp"
-                android:text="Asignar cantidad"/>
+                android:text="@string/asignar_cantidad"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:orientation="horizontal"
-                android:layout_below="@+id/contCat"
                 android:padding="5dp">
 
                 <Button
@@ -46,8 +45,8 @@
                     android:id="@+id/btn_menos"
                     android:background="@drawable/btn_circle"
                     android:textColor="@color/blanco"
-                    android:textSize="20dp"
-                    android:text="-"/>
+                    android:textSize="20sp"
+                    android:text="@string/guion"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -57,16 +56,16 @@
                     android:layout_marginLeft="10dp"
                     android:layout_gravity="center"
                     android:textColor="@color/negro"
-                    android:textSize="17dp"
-                    android:text="0"/>
+                    android:textSize="17sp"
+                    android:text="@string/cero"/>
 
                 <Button
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:id="@+id/btn_mas"
                     android:background="@drawable/btn_circle"
-                    android:textSize="20dp"
-                    android:text="+"
+                    android:textSize="20sp"
+                    android:text="@string/mas"
                     android:textColor="@color/blanco"/>
 
             </LinearLayout>
@@ -92,14 +91,13 @@
                 android:layout_marginBottom="10dp"
                 android:textColor="@color/negro"
                 android:textSize="15sp"
-                android:text="Precio"/>
+                android:text="@string/price"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:orientation="horizontal"
-                android:layout_below="@+id/contCat"
                 android:padding="5dp">
 
                 <TextView
@@ -107,14 +105,14 @@
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:textColor="@color/negro"
-                    android:text="Unidad: "/>
+                    android:text="@string/unidad"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/price_unit_order"
                     android:textColor="@color/negro"
-                    android:text=" S/. 00.00"/>
+                    android:text="@string/reset"/>
 
             </LinearLayout>
 
@@ -123,7 +121,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:orientation="horizontal"
-                android:layout_below="@+id/contCat"
                 android:padding="5dp">
 
                 <TextView
@@ -131,14 +128,14 @@
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:textColor="@color/negro"
-                    android:text="IGV: "/>
+                    android:text="@string/igv"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/igv_order"
                     android:textColor="@color/negro"
-                    android:text=" S/. 00.00"/>
+                    android:text="@string/reset"/>
 
             </LinearLayout>
 
@@ -147,7 +144,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:orientation="horizontal"
-                android:layout_below="@+id/contCat"
                 android:padding="5dp">
 
                 <TextView
@@ -155,14 +151,14 @@
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:textColor="@color/negro"
-                    android:text="Total: "/>
+                    android:text="@string/total"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/total_order"
                     android:textColor="@color/negro"
-                    android:text=" S/. 00.00"/>
+                    android:text="@string/reset"/>
 
             </LinearLayout>
 

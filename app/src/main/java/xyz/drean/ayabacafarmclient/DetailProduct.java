@@ -3,13 +3,12 @@ package xyz.drean.ayabacafarmclient;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.chip.Chip;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,59 +19,53 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
+import xyz.drean.ayabacafarmclient.abstraction.General;
 import xyz.drean.ayabacafarmclient.pojo.Order;
-import xyz.drean.ayabacafarmclient.pojo.Profile;
+
+import static java.lang.String.*;
 
 public class DetailProduct extends AppCompatActivity {
 
     private String name;
-    private String description;
-    private String category;
     private double price;
     private String urlImg;
-    private String uid;
 
     private TextView igv;
-    private TextView precio;
+    private TextView price_ui;
     private TextView total;
-    private TextView cantidad;
-    private boolean habilitar = false;
+    private TextView quantity_ui;
+    private boolean enable = false;
 
     private String nameUser;
-    private String addresUser;
+    private String addressUser;
     private String celUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_poduct);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         init();
         getProfile(getIdProfile());
 
-        getSupportActionBar().setTitle(name);
+        actionBar.setTitle(name);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_detail);
+        FloatingActionButton fab = findViewById(R.id.fab_detail);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -98,11 +91,11 @@ public class DetailProduct extends AppCompatActivity {
         builder.setPositiveButton("Pedir", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(habilitar) {
+                if(enable) {
                     saveOrder();
                     finish();
                 } else {
-                    Toast.makeText(DetailProduct.this, "¡Asigne una cantidad mayor a 0!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DetailProduct.this, getResources().getString(R.string.asign_count), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -123,15 +116,15 @@ public class DetailProduct extends AppCompatActivity {
 
     private Order createOrder() {
         return new Order(
-                String.valueOf(System.currentTimeMillis()),
+                valueOf(System.currentTimeMillis()),
                 getIdProfile(),
-                addresUser,
+                addressUser,
                 name,
                 urlImg,
                 nameUser,
                 celUser,
-                cantidad.getText().toString(),
-                Double.parseDouble(precio.getText().toString()),
+                quantity_ui.getText().toString(),
+                Double.parseDouble(price_ui.getText().toString()),
                 Double.parseDouble(igv.getText().toString()),
                 getDate(),
                 Double.parseDouble(total.getText().toString())
@@ -146,9 +139,7 @@ public class DetailProduct extends AppCompatActivity {
     }
 
     public String formatDate(int dia, int mes, int ano) {
-        return (String.format("%02d", dia)
-                + "/" + String.format("%02d", mes + 1)
-                + "/" + ano);
+        return String.format(Locale.getDefault(),"%d/%d/%d", dia, (mes + 1), ano);
     }
 
     private void getProfile(String uid) {
@@ -159,8 +150,9 @@ public class DetailProduct extends AppCompatActivity {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
+                    assert document != null;
                     nameUser = document.getString("name");
-                    addresUser = document.getString("address");
+                    addressUser = document.getString("address");
                     celUser = document.getString("cel");
                 }
             }
@@ -169,20 +161,20 @@ public class DetailProduct extends AppCompatActivity {
 
     private void dataOrder(View v){
         igv = v.findViewById(R.id.igv_order);
-        precio = v.findViewById(R.id.price_unit_order);
-        cantidad = v.findViewById(R.id.cantidad_order);
+        price_ui = v.findViewById(R.id.price_unit_order);
+        quantity_ui = v.findViewById(R.id.cantidad_order);
         total = v.findViewById(R.id.total_order);
         Button mas = v.findViewById(R.id.btn_mas);
         Button menos = v.findViewById(R.id.btn_menos);
 
-        precio.setText("" + price);
+        price_ui.setText(String.valueOf(price));
 
         menos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String cant = cantidad.getText().toString();
+                String cant = quantity_ui.getText().toString();
                 if(Integer.parseInt(cant) > 1) {
-                    cantidad.setText("" + (Integer.parseInt(cant) - 1));
+                    quantity_ui.setText((Integer.parseInt(cant) - 1));
                     calculate();
                 }
             }
@@ -191,10 +183,10 @@ public class DetailProduct extends AppCompatActivity {
         mas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String cant = cantidad.getText().toString();
-                cantidad.setText("" + (Integer.parseInt(cant) + 1));
+                String cant = quantity_ui.getText().toString();
+                quantity_ui.setText((Integer.parseInt(cant) + 1));
                 calculate();
-                habilitar = true;
+                enable = true;
             }
         });
     }
@@ -202,14 +194,14 @@ public class DetailProduct extends AppCompatActivity {
     public void calculate() {
         double precio = price;
 
-        String cant = cantidad.getText().toString();
+        String cant = quantity_ui.getText().toString();
         int cantidad = Integer.parseInt(cant);
         double subtotal = precio * cantidad;
         double igv = subtotal * 0.18;
         double total = (precio * cantidad) + igv;
 
-        this.igv.setText("" + igv);
-        this.total.setText("" + total);
+        this.igv.setText(String.valueOf(igv));
+        this.total.setText(String.valueOf(total));
     }
 
     private void init() {
@@ -220,35 +212,17 @@ public class DetailProduct extends AppCompatActivity {
         ImageView img = findViewById(R.id.img_detail);
 
         name = getIntent().getStringExtra("name");
-        description = getIntent().getStringExtra("description");
-        category = getIntent().getStringExtra("category");
+        String description = getIntent().getStringExtra("description");
+        String category = getIntent().getStringExtra("category");
         price = getIntent().getDoubleExtra("price", 0.0);
         urlImg = getIntent().getStringExtra("urlImg");
-        uid = getIntent().getStringExtra("uid");
 
         name_u.setText(name);
         description_u.setText(description);
         category_u.setText(category);
-        price_u.setText("S/. " + price);
+        price_u.setText(String.valueOf(price));
 
-        loadImg(urlImg, img);
-    }
-
-    private void loadImg(String urlImg, final ImageView img) {
-        StorageReference str = FirebaseStorage.getInstance().getReference()
-                .child("img")
-                .child(urlImg);
-
-        try {
-            final File localFile = File.createTempFile("images", "jpg");
-            str.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    Glide.with(DetailProduct.this).load(localFile).into(img);
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        General general = new General();
+        general.loadImage(urlImg, img, DetailProduct.this);
     }
 }

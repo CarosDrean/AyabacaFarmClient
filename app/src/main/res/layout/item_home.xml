@@ -10,9 +10,8 @@
         android:id="@+id/background_home"
         android:layout_width="match_parent"
         android:layout_height="@dimen/altura_miniatura_comida"
-        android:src="@drawable/holder"
         android:transitionName="@string/trancicionFoto"
-        android:scaleType="centerCrop" />
+        android:contentDescription="@string/name" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -26,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="left|bottom"
         android:layout_marginBottom="32dp"
-        android:paddingLeft="@dimen/espacio_norma_1"
+        android:paddingStart="@dimen/espacio_norma_1"
         android:shadowColor="#4e4d4d"
         android:shadowDx="3"
         android:shadowDy="2"
@@ -42,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="left|bottom"
         android:paddingBottom="16dp"
-        android:paddingLeft="16dp"
+        android:paddingStart="16dp"
         android:shadowColor="#4e4d4d"
         android:shadowDx="3"
         android:shadowDy="2"

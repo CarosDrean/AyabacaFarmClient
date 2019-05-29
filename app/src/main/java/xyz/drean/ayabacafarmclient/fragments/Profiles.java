@@ -1,6 +1,7 @@
 package xyz.drean.ayabacafarmclient.fragments;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -46,7 +47,7 @@ public class Profiles extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
@@ -78,6 +79,7 @@ public class Profiles extends Fragment {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     uidUser = uid;
+                    assert document != null;
                     nameUser = document.getString("name");
                     addressUser = document.getString("address");
                     celUser = document.getString("cel");
@@ -94,7 +96,9 @@ public class Profiles extends Fragment {
     }
 
     private String getIdProfile() {
-        SharedPreferences prefs = getActivity().getSharedPreferences("DatosUser", Context.MODE_PRIVATE);
+        Activity activity = getActivity();
+        assert activity != null;
+        SharedPreferences prefs = activity.getSharedPreferences("DatosUser", Context.MODE_PRIVATE);
         return prefs.getString("uid", "");
     }
 

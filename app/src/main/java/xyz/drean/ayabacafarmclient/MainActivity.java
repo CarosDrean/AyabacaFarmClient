@@ -3,11 +3,11 @@ package xyz.drean.ayabacafarmclient;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
@@ -27,7 +27,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import xyz.drean.ayabacafarmclient.fragments.Home;
 import xyz.drean.ayabacafarmclient.fragments.Orders;
@@ -53,12 +52,14 @@ public class MainActivity extends AppCompatActivity
 
         dataHome(navigationView.getHeaderView(0));
 
-        if(navigationView != null){
-            onNavigationItemSelected(navigationView.getMenu().getItem(0));
-        }
+        onNavigationItemSelected(navigationView.getMenu().getItem(0));
 
         if(getUseApp() == 0 || getIdProfile().equals("")){
-            welcome();
+            simpleAlert(
+                    getResources().getString(R.string.important),
+                    getResources().getString(R.string.message_important),
+                    getResources().getString(R.string.list)
+            );
         }
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -75,9 +76,7 @@ public class MainActivity extends AppCompatActivity
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            FirebaseUser user = mAuth.getCurrentUser();
-                        } else {
+                        if (!task.isSuccessful()) {
                             Toast.makeText(MainActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
@@ -95,30 +94,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void abaut(){
+    private void simpleAlert(String title, String message, String positiveButton) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Acerca de")
-                .setMessage("Somos una nueva empresa de la ciudad de Ica, que les ofrece un servicio de calidad unica.");
-        builder.setPositiveButton("Listo", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        Dialog dialog = builder.create();
-        dialog.show();
-    }
-
-    private void welcome(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Importante")
+        builder.setTitle(title)
                 .setCancelable(false)
-                .setMessage("Para poder interactuar con la aplicación primero debras regitras tus datos, para asi poder ponernos en contacto contigo :).");
-        builder.setPositiveButton("Listo", new DialogInterface.OnClickListener() {
+                .setMessage(message);
+        builder.setPositiveButton(positiveButton, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Intent i = new Intent(MainActivity.this, InputProfile.class);
-                startActivity(i);
                 dialog.dismiss();
             }
         });
@@ -138,16 +121,19 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            abaut();
+            simpleAlert(
+                    getResources().getString(R.string.action_abaut),
+                    getResources().getString(R.string.text_abaut),
+                    getResources().getString(R.string.list)
+            );
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Fragment fragment  = null;
         boolean fragmentManager = false;
 
@@ -169,9 +155,11 @@ public class MainActivity extends AppCompatActivity
         }
 
         if(fragmentManager){
+            ActionBar actionBar = getSupportActionBar();
             getSupportFragmentManager().beginTransaction().replace(R.id.content_main, fragment).commit();
             item.setChecked(true);
-            getSupportActionBar().setTitle(item.getTitle());
+            assert actionBar != null;
+            actionBar.setTitle(item.getTitle());
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

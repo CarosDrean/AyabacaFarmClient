@@ -10,93 +10,76 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import xyz.drean.ayabacafarmclient.DetailProduct;
 import xyz.drean.ayabacafarmclient.R;
+import xyz.drean.ayabacafarmclient.abstraction.General;
 import xyz.drean.ayabacafarmclient.pojo.Product;
 
-public class AdapterCategory extends RecyclerView.Adapter<AdapterCategory.CategoriaViewHolder> {
+public class AdapterCategory extends RecyclerView.Adapter<AdapterCategory.CategoryViewHolder> {
 
-    private ArrayList<Product> productos;
+    private ArrayList<Product> products;
     private Activity activity;
 
-    public AdapterCategory(ArrayList<Product> productos, Activity activity) {
-        this.productos = productos;
+    public AdapterCategory(ArrayList<Product> products, Activity activity) {
+        this.products = products;
         this.activity = activity;
     }
 
     @NonNull
     @Override
-    public CategoriaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public CategoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product, parent, false);
-        return new AdapterCategory.CategoriaViewHolder(v);
+        return new CategoryViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final CategoriaViewHolder holder, int position) {
-        final Product item = productos.get(position);
-        holder.nombre.setText(item.getName());
-        holder.precio.setText("" + item.getPrice());
+    public void onBindViewHolder(@NonNull final CategoryViewHolder holder, int position) {
+        final Product item = products.get(position);
+        holder.name.setText(item.getName());
+        holder.price.setText(String.valueOf(item.getPrice()));
 
-        StorageReference str = FirebaseStorage.getInstance().getReference()
-                .child("img")
-                .child(item.getUrlImg());
+        General general = new General();
+        general.loadImage(item.getUrlImg(), holder.image, activity);
 
-        try {
-            final File localFile = File.createTempFile("images", "jpg");
-            str.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    Glide.with(activity).load(localFile).into(holder.imagen);
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        holder.imagen.setOnClickListener(new View.OnClickListener() {
+        holder.image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(activity, DetailProduct.class);
-                i.putExtra("uid", item.getUid());
-                i.putExtra("name", item.getName());
-                i.putExtra("description", item.getDescription());
-                i.putExtra("category", item.getCategory());
-                i.putExtra("price", item.getPrice());
-                i.putExtra("urlImg", item.getUrlImg());
-                activity.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        activity, v, activity.getString(R.string.trancicionFoto)).toBundle());
+                goDetail(item, activity, v);
             }
         });
 
     }
 
-    @Override
-    public int getItemCount() {
-        return productos.size();
+    private void goDetail(Product model, Activity activity, View v) {
+        Intent i = new Intent(activity, DetailProduct.class);
+        i.putExtra("uid", model.getUid());
+        i.putExtra("name", model.getName());
+        i.putExtra("description", model.getDescription());
+        i.putExtra("category", model.getCategory());
+        i.putExtra("price", model.getPrice());
+        i.putExtra("urlImg", model.getUrlImg());
+        activity.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation(
+                activity, v, activity.getString(R.string.trancicionFoto)).toBundle());
     }
 
-    public static class CategoriaViewHolder extends RecyclerView.ViewHolder{
+    @Override
+    public int getItemCount() {
+        return products.size();
+    }
 
-        private ImageView imagen;
-        private TextView precio;
-        private TextView nombre;
+    static class CategoryViewHolder extends RecyclerView.ViewHolder{
 
-        public CategoriaViewHolder(View itemView) {
+        private ImageView image;
+        private TextView price;
+        private TextView name;
+
+        CategoryViewHolder(View itemView) {
             super(itemView);
-            nombre = itemView.findViewById(R.id.nombre_prodcuto);
-            precio = itemView.findViewById(R.id.precio_producto);
-            imagen = itemView.findViewById(R.id.img_product);
+            name = itemView.findViewById(R.id.nombre_prodcuto);
+            price = itemView.findViewById(R.id.precio_producto);
+            image = itemView.findViewById(R.id.img_product);
         }
     }
 }

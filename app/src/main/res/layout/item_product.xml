@@ -9,10 +9,9 @@
     <ImageView
         android:id="@+id/img_product"
         android:layout_width="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/holder"
         android:transitionName="@string/trancicionFoto"
-        android:layout_height="192dp" />
+        android:layout_height="192dp"
+        android:contentDescription="@string/name" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,7 +24,7 @@
             android:id="@+id/precio_producto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Precio"
+            android:text="@string/price"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
             android:textStyle="normal|bold" />
 
@@ -33,7 +32,7 @@
             android:id="@+id/nombre_prodcuto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nombre"
+            android:text="@string/name"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
             android:textSize="12sp" />
 

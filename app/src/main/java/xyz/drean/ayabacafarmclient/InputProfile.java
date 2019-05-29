@@ -7,7 +7,6 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -41,31 +40,42 @@ public class InputProfile extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!name.getText().toString().equals("") || !address.getText().toString().equals("") || !cel.getText().toString().equals("")){
-                    saveProfile();
-                    Intent i = new Intent(InputProfile.this, MainActivity.class);
-                    startActivity(i);
-                } else {
-                    Toast.makeText(InputProfile.this, "¡Llene todos los campos!", Toast.LENGTH_SHORT).show();
-                }
+                clickSave();
             }
         });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        getSupportActionBar().setTitle("Datos de usuario");
 
         ActionBar actionBar = getSupportActionBar();
-        final Drawable menuIcon = getResources().getDrawable(R.drawable.ic_baseline_close_24px);
-        menuIcon.setColorFilter(getResources().getColor(R.color.blanco), PorterDuff.Mode.SRC_ATOP);
-        actionBar.setHomeAsUpIndicator(menuIcon);
+
+        assert actionBar != null;
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        actionBar.setTitle("Datos de usuario");
+
+        iconActionBar(actionBar);
 
         if(getIntent().getStringExtra("name") != null) {
-            edit();
+            edit(actionBar);
         }
     }
 
-    private void edit() {
-        getSupportActionBar().setTitle("Editar Usuario");
+    private void iconActionBar(ActionBar actionBar) {
+        final Drawable menuIcon = getResources().getDrawable(R.drawable.ic_baseline_close_24px, null);
+        menuIcon.setColorFilter(getResources().getColor(R.color.blanco), PorterDuff.Mode.SRC_ATOP);
+        actionBar.setHomeAsUpIndicator(menuIcon);
+    }
+
+    private void clickSave() {
+        if(!name.getText().toString().equals("") || !address.getText().toString().equals("") || !cel.getText().toString().equals("")){
+            saveProfile();
+            Intent i = new Intent(InputProfile.this, MainActivity.class);
+            startActivity(i);
+        } else {
+            Toast.makeText(InputProfile.this, getResources().getString(R.string.fill_fields), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void edit(ActionBar actionBar) {
+        actionBar.setTitle("Editar Usuario");
         uid = getIntent().getStringExtra("uid");
         name.setText(getIntent().getStringExtra("name"));
         address.setText(getIntent().getStringExtra("address"));
@@ -86,13 +96,12 @@ public class InputProfile extends AppCompatActivity {
         if(getIntent().getStringExtra("name") != null) {
             super.onBackPressed();
         } else {
-            Toast.makeText(this, "¡Debe llenar los campos!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.fill_fields), Toast.LENGTH_SHORT).show();
         }
     }
 
     private void saveProfile() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
         String uid = String.valueOf(System.currentTimeMillis());
 
         Profile p = new Profile(
@@ -105,7 +114,7 @@ public class InputProfile extends AppCompatActivity {
         if(getIntent().getStringExtra("name") != null) {
             uid = this.uid;
             p.setUid(uid);
-            Toast.makeText(this, "¡Datos actualizados!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.data_updated), Toast.LENGTH_SHORT).show();
         } else {
             saveIdProfile(uid);
         }

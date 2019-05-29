@@ -23,7 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/name_detail"
-                android:text="Titulo"
+                android:text="@string/title_ui"
                 android:textSize="18sp"
                 android:textColor="@color/negro"
                 android:textStyle="bold"/>
@@ -34,7 +34,7 @@
                 android:id="@+id/descrption_detail"
                 android:layout_marginTop="5dp"
                 android:textSize="16sp"
-                android:text="Esta es la descripcion del prodcuto seleccionado por lo tanto..."/>
+                android:text="@string/text_description"/>
 
         </LinearLayout>
 
@@ -54,7 +54,7 @@
                 android:id="@+id/category_detail"
                 android:padding="10dp"
                 android:layout_margin="15dp"
-                android:text="Category"
+                android:text="@string/category"
                 android:textStyle="normal"
                 app:chipIconEnabled="true"
                 app:iconStartPadding="5dp"
@@ -67,7 +67,7 @@
                 android:id="@+id/price_detail"
                 android:padding="10dp"
                 android:layout_marginTop="15dp"
-                android:text="S/. 15.2"
+                android:text="@string/price_holder"
                 android:textStyle="normal"
                 app:chipIconEnabled="true"
                 app:iconStartPadding="5dp"

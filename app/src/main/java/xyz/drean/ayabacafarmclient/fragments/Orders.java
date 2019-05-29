@@ -1,23 +1,24 @@
 package xyz.drean.ayabacafarmclient.fragments;
 
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
@@ -25,16 +26,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.drean.ayabacafarmclient.R;
+import xyz.drean.ayabacafarmclient.abstraction.General;
 import xyz.drean.ayabacafarmclient.pojo.Order;
 
 /**
@@ -48,40 +44,66 @@ public class Orders extends Fragment {
     RecyclerView orderList;
     ArrayList<Order> orders;
 
+    private final int CODE_PERMISSION_CALL = 0;
+    int hasCallPermission;
+
     public Orders() {
         // Required empty public constructor
     }
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_orders, container, false);
-        orderList = v.findViewById(R.id.recycler_order);
-        orders = new ArrayList<>();
-        init();
+
+        init(v);
+        accessPermission(getActivity());
         getData();
         return v;
     }
 
-    private void init(){
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == CODE_PERMISSION_CALL) {
+            if (!(grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                Toast.makeText(getContext(), getResources().getString(R.string.permission_denied), Toast.LENGTH_SHORT).show();
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void accessPermission(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            hasCallPermission = activity.checkSelfPermission(Manifest.permission.CALL_PHONE);
+            if(hasCallPermission != PackageManager.PERMISSION_GRANTED) {
+                activity.requestPermissions(new String[]{ Manifest.permission.CALL_PHONE }, CODE_PERMISSION_CALL);
+            }
+        }
+    }
+
+    private void init(View v){
+        orderList = v.findViewById(R.id.recycler_order);
+        orders = new ArrayList<>();
         llm = new LinearLayoutManager(getContext());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         orderList.setLayoutManager(llm);
         db = FirebaseFirestore.getInstance();
     }
 
-    private String getIdProfile() {
-        SharedPreferences prefs = getActivity().getSharedPreferences("DatosUser", Context.MODE_PRIVATE);
+    private String getIdProfile(Activity activity) {
+        SharedPreferences prefs = activity.getSharedPreferences("DatosUser", Context.MODE_PRIVATE);
         return prefs.getString("uid", "");
     }
 
     private void getData() {
+        final Activity activity = getActivity();
+        assert activity != null;
         Query query = db
                 .collection("orders")
                 .orderBy("uid")
-                .whereEqualTo("uidClient", getIdProfile())
+                .whereEqualTo("uidClient", getIdProfile(activity))
                 .limit(50);
 
         FirestoreRecyclerOptions<Order> options = new FirestoreRecyclerOptions.Builder<Order>()
@@ -90,6 +112,7 @@ public class Orders extends Fragment {
                     @Override
                     public Order parseSnapshot(@NonNull DocumentSnapshot snapshot) {
                         Order o = snapshot.toObject(Order.class);
+                        assert o != null;
                         o.setUid(snapshot.getId());
 
                         return o;
@@ -102,26 +125,14 @@ public class Orders extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull final OrderHolder holder, final int position, @NonNull final Order model) {
                 holder.name.setText(model.getNameProduct());
-                holder.product.setText(model.getQuantity() + " - S/." + model.getTotal());
+                holder.product.setText(String.format("%s - S/.%s", model.getQuantity(), model.getTotal()));
                 holder.adders.setText(model.getDate());
 
                 holder.itemView.setTag(model.getUid());
 
-                StorageReference str = FirebaseStorage.getInstance().getReference()
-                        .child("img")
-                        .child(model.getUrlImg());
+                General general = new General();
+                general.loadImage(model.getUrlImg(), holder.img, activity);
 
-                try {
-                    final File localFile = File.createTempFile("images", "jpg");
-                    str.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                            Glide.with(getActivity()).load(localFile).into(holder.img);
-                        }
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
 
             @Override
@@ -138,7 +149,6 @@ public class Orders extends Fragment {
             }
         };
 
-        //adapter.notifyDataSetChanged();
         orderList.setAdapter(adapter);
     }
 
@@ -156,20 +166,18 @@ public class Orders extends Fragment {
     }
 
     public class OrderHolder extends RecyclerView.ViewHolder {
-        CircleImageView img;
-        TextView name;
-        TextView product;
-        TextView adders;
-        //ImageView delete;
-        public RelativeLayout content;
+        private CircleImageView img;
+        private TextView name;
+        private TextView product;
+        private TextView adders;
+        RelativeLayout content;
 
-        public OrderHolder(View itemView) {
+        OrderHolder(View itemView) {
             super(itemView);
             img = itemView.findViewById(R.id.img_order);
             name = itemView.findViewById(R.id.name_order);
             product = itemView.findViewById(R.id.product_order);
             adders = itemView.findViewById(R.id.address_order);
-            //delete = itemView.findViewById(R.id.call_order);
             content = itemView.findViewById(R.id.content_item_order);
         }
     }

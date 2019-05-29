@@ -64,9 +64,9 @@ public class Products extends Fragment {
 
     private void populateViewPager(ViewPager viewPager){
         AdaptadorSecciones adapter = new AdaptadorSecciones(getFragmentManager());
-        adapter.addFragment(Categorys.nuevaInstancia(0), getString(R.string.pastillas));
-        adapter.addFragment(Categorys.nuevaInstancia(1), getString(R.string.jarabes));
-        adapter.addFragment(Categorys.nuevaInstancia(2), getString(R.string.injectables));
+        adapter.addFragment(Categories.newInstance(0), getString(R.string.pastillas));
+        adapter.addFragment(Categories.newInstance(1), getString(R.string.jarabes));
+        adapter.addFragment(Categories.newInstance(2), getString(R.string.injectables));
         viewPager.setAdapter(adapter);
     }
 
