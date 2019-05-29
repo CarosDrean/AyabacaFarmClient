@@ -12,25 +12,21 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import java.util.ArrayList;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 import xyz.drean.ayabacafarmclient.R;
-import xyz.drean.ayabacafarmclient.abstraction.General;
+import xyz.drean.ayabacafarmclient.adapters.AdapterOrder;
 import xyz.drean.ayabacafarmclient.pojo.Order;
 
 /**
@@ -39,10 +35,10 @@ import xyz.drean.ayabacafarmclient.pojo.Order;
 public class Orders extends Fragment {
 
     private FirebaseFirestore db;
-    private FirestoreRecyclerAdapter adapter;
+    private CollectionReference collOrders;
+    private AdapterOrder adapter;
     LinearLayoutManager llm;
     RecyclerView orderList;
-    ArrayList<Order> orders;
 
     private final int CODE_PERMISSION_CALL = 0;
     int hasCallPermission;
@@ -85,11 +81,13 @@ public class Orders extends Fragment {
 
     private void init(View v){
         orderList = v.findViewById(R.id.recycler_order);
-        orders = new ArrayList<>();
+
         llm = new LinearLayoutManager(getContext());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         orderList.setLayoutManager(llm);
+
         db = FirebaseFirestore.getInstance();
+        collOrders = db.collection("orders");
     }
 
     private String getIdProfile(Activity activity) {
@@ -100,86 +98,27 @@ public class Orders extends Fragment {
     private void getData() {
         final Activity activity = getActivity();
         assert activity != null;
-        Query query = db
-                .collection("orders")
-                .orderBy("uid")
-                .whereEqualTo("uidClient", getIdProfile(activity))
-                .limit(50);
+        Query query = collOrders
+                .whereEqualTo("uidClient", getIdProfile(getActivity()));
 
         FirestoreRecyclerOptions<Order> options = new FirestoreRecyclerOptions.Builder<Order>()
-                .setQuery(query, new SnapshotParser<Order>() {
-                    @NonNull
-                    @Override
-                    public Order parseSnapshot(@NonNull DocumentSnapshot snapshot) {
-                        Order o = snapshot.toObject(Order.class);
-                        assert o != null;
-                        o.setUid(snapshot.getId());
-
-                        return o;
-                    }
-                })
-                .setLifecycleOwner(this)
+                .setQuery(query, Order.class)
                 .build();
 
-        adapter = new FirestoreRecyclerAdapter<Order, OrderHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull final OrderHolder holder, final int position, @NonNull final Order model) {
-                holder.name.setText(model.getNameProduct());
-                holder.product.setText(String.format("%s - S/.%s", model.getQuantity(), model.getTotal()));
-                holder.adders.setText(model.getDate());
-
-                holder.itemView.setTag(model.getUid());
-
-                General general = new General();
-                general.loadImage(model.getUrlImg(), holder.img, activity);
-
-            }
-
-            @Override
-            public int getItemCount() {
-                return super.getItemCount();
-            }
-
-            @NonNull
-            @Override
-            public OrderHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-                View view = LayoutInflater.from(viewGroup.getContext())
-                        .inflate(R.layout.item_order, viewGroup, false);
-                return new OrderHolder(view);
-            }
-        };
-
+        adapter = new AdapterOrder(options, getActivity());
         orderList.setAdapter(adapter);
-    }
 
-    private void deleteItem(String uid, final int position) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("orders").document(uid)
-                .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
-            public void onSuccess(Void aVoid) {
-                Toast.makeText(getActivity(), "¡Pedido eliminado!", Toast.LENGTH_SHORT).show();
-                adapter.notifyDataSetChanged();
-                adapter.notifyItemRemoved(position);
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
+                return false;
             }
-        });
-    }
 
-    public class OrderHolder extends RecyclerView.ViewHolder {
-        private CircleImageView img;
-        private TextView name;
-        private TextView product;
-        private TextView adders;
-        RelativeLayout content;
-
-        OrderHolder(View itemView) {
-            super(itemView);
-            img = itemView.findViewById(R.id.img_order);
-            name = itemView.findViewById(R.id.name_order);
-            product = itemView.findViewById(R.id.product_order);
-            adders = itemView.findViewById(R.id.address_order);
-            content = itemView.findViewById(R.id.content_item_order);
-        }
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+                adapter.removeItem(viewHolder.getAdapterPosition());
+            }
+        }).attachToRecyclerView(orderList);
     }
 
     @Override

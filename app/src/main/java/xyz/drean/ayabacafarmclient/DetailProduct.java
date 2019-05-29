@@ -139,7 +139,7 @@ public class DetailProduct extends AppCompatActivity {
     }
 
     public String formatDate(int dia, int mes, int ano) {
-        return String.format(Locale.getDefault(),"%d/%d/%d", dia, (mes + 1), ano);
+        return String.format(Locale.getDefault(),"%02d/%02d/%d", dia, (mes + 1), ano);
     }
 
     private void getProfile(String uid) {
@@ -174,7 +174,7 @@ public class DetailProduct extends AppCompatActivity {
             public void onClick(View v) {
                 String cant = quantity_ui.getText().toString();
                 if(Integer.parseInt(cant) > 1) {
-                    quantity_ui.setText((Integer.parseInt(cant) - 1));
+                    quantity_ui.setText(String.valueOf(Integer.parseInt(cant) - 1));
                     calculate();
                 }
             }
@@ -184,7 +184,7 @@ public class DetailProduct extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String cant = quantity_ui.getText().toString();
-                quantity_ui.setText((Integer.parseInt(cant) + 1));
+                quantity_ui.setText(String.valueOf(Integer.parseInt(cant) + 1));
                 calculate();
                 enable = true;
             }

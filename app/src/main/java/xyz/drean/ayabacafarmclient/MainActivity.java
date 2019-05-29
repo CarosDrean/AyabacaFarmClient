@@ -3,6 +3,7 @@ package xyz.drean.ayabacafarmclient;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity
         onNavigationItemSelected(navigationView.getMenu().getItem(0));
 
         if(getUseApp() == 0 || getIdProfile().equals("")){
-            simpleAlert(
+            welcome(
                     getResources().getString(R.string.important),
                     getResources().getString(R.string.message_important),
                     getResources().getString(R.string.list)
@@ -69,6 +70,23 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         signInAnonymously();
+    }
+
+    private void welcome(String title, String message, String positiveButton){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title)
+                .setCancelable(false)
+                .setMessage(message);
+        builder.setPositiveButton(positiveButton, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent i = new Intent(MainActivity.this, InputProfile.class);
+                startActivity(i);
+                dialog.dismiss();
+            }
+        });
+        Dialog dialog = builder.create();
+        dialog.show();
     }
 
     private void signInAnonymously() {
@@ -97,7 +115,6 @@ public class MainActivity extends AppCompatActivity
     private void simpleAlert(String title, String message, String positiveButton) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title)
-                .setCancelable(false)
                 .setMessage(message);
         builder.setPositiveButton(positiveButton, new DialogInterface.OnClickListener() {
             @Override
